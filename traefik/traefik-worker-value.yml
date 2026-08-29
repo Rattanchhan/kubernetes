@@ -1,0 +1,37 @@
+deployment:
+  replicas: 2
+  hostNetwork: true
+
+service:
+  spec:
+    type: ClusterIP
+
+ports:
+  web:
+    port: 8089
+    hostPort: 80
+    http:
+      redirection:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    port: 8443
+    hostPort: 443
+    http:
+      tls:
+        enabled: true
+
+providers:
+  kubernetesCRD:
+    enabled: true
+  kubernetesIngress:
+    enabled: true
+
+api:
+  dashboard: true
+
+additionalArguments:
+  - "--api.insecure=true"
+  - "--api.dashboard=true"
