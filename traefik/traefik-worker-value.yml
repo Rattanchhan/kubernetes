@@ -1,27 +1,44 @@
 deployment:
   replicas: 2
-  hostNetwork: true
 
-service:
-  spec:
-    type: ClusterIP
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: traefik
+        topologyKey: kubernetes.io/hostname
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: node-role.kubernetes.io/control-plane
+              operator: DoesNotExist
+updateStrategy:
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 1
 
 ports:
   web:
-    port: 8089
+    port: 8000
     hostPort: 80
+    exposedPort: 80
     http:
-      redirection:
+      redirections:
         entryPoint:
           to: websecure
           scheme: https
           permanent: true
+
   websecure:
     port: 8443
     hostPort: 443
-    http:
-      tls:
-        enabled: true
+    exposedPort: 443
+
+service:
+  spec:
+    type: ClusterIP
 
 providers:
   kubernetesCRD:
@@ -31,7 +48,10 @@ providers:
 
 api:
   dashboard: true
+  insecure: false
 
-additionalArguments:
-  - "--api.insecure=true"
-  - "--api.dashboard=true"
+log:
+  level: INFO
+
+accessLog:
+  enabled: true
