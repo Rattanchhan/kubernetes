@@ -10,7 +10,6 @@ spec:
   selector:
     matchLabels:
       app: nginx-dpl
-  replicas: 1
   strategy:
     rollingUpdate:
       maxSurge: 25%

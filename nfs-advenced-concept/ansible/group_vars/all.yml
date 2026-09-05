@@ -1,0 +1,10 @@
+---
+# Prefer the private cluster subnet, for example "172.31.0.0/16".
+nfs_allowed_network: "*"
+nfs_export_directory: /srv/nfs/kubernetes
+nfs_client_mount_directory: /mnt/nfs/kubernetes
+nfs_export_options: rw,sync,no_subtree_check,root_squash
+nfs_mount_options: rw,_netdev,nofail,nfsvers=4.1
+nfs_server_address: >-
+  {{ hostvars[groups['nfs_server'][0]].ansible_host |
+     default(groups['nfs_server'][0]) }}
