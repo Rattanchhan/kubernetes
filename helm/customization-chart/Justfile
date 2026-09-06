@@ -1,0 +1,5 @@
+#!/bin/bash
+render-stag:
+    helm template ../customization-chart --values ../customization-chart/stag-values.yaml
+render-prod:
+    helm template ../customization-chart --values ../customization-chart/prod-values.yaml
